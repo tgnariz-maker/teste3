@@ -1,0 +1,51 @@
+<mat-card class="backend-card">
+  <mat-card-header>
+    <div class="service-info">
+      <mat-card-title>{{backend.name}}</mat-card-title>
+      <mat-card-subtitle>{{backend.description}}</mat-card-subtitle>
+    </div>
+    <mat-chip-set>
+      <mat-chip [ngClass]="getStatusClass()">
+        <mat-icon matChipAvatar>{{getStatusIcon()}}</mat-icon>
+        {{backend.status}}
+      </mat-chip>
+    </mat-chip-set>
+  </mat-card-header>
+
+  <mat-card-content>
+    <div class="service-details">
+      <div class="detail-row">
+        <mat-icon class="detail-icon">info</mat-icon>
+        <span class="detail-label">Versão:</span>
+        <span class="detail-value">{{backend.version}}</span>
+      </div>
+      
+      <div class="detail-row">
+        <mat-icon class="detail-icon">public</mat-icon>
+        <span class="detail-label">Ambiente:</span>
+        <span class="detail-value">{{backend.environment}}</span>
+      </div>
+      
+      <div class="detail-row">
+        <mat-icon class="detail-icon">api</mat-icon>
+        <span class="detail-label">APIs:</span>
+        <span class="detail-value">{{backend.apis}}</span>
+      </div>
+      
+      <div class="detail-row">
+        <mat-icon class="detail-icon">schedule</mat-icon>
+        <span class="detail-label">Uptime:</span>
+        <span class="detail-value uptime">{{backend.uptime}}</span>
+      </div>
+    </div>
+  </mat-card-content>
+
+  <mat-divider></mat-divider>
+
+  <mat-card-actions align="end">
+    <button mat-raised-button color="primary" (click)="viewDetails()">
+      <mat-icon>visibility</mat-icon>
+      Ver detalhes
+    </button>
+  </mat-card-actions>
+</mat-card>

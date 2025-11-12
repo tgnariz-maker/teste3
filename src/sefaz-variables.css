@@ -1,0 +1,26 @@
+@import './sefaz-variables.css';
+
+/* ========== VARIÁVEIS SEFAZ-SE OFICIAIS ========== */
+:root {
+    /* CORES PRIMÁRIAS SEFAZ */
+    --sefaz-blue-primary: #003680;     
+    --sefaz-blue-secondary: #0072BC;   
+    --sefaz-blue-hover: #004C8C;        
+    --sefaz-blue-dark: #002147;        
+    --sefaz-orange: #F99C1C;            
+    
+    /* CORES NEUTRAS SEFAZ */
+    --sefaz-white: #FFFFFF;
+    --sefaz-gray-light: #F5F5F5;
+    --sefaz-gray-medium: #999999;
+    --sefaz-black: #000000;
+    
+    /* MAPEAMENTO PARA USO ATUAL */
+    --header-bg: var(--sefaz-blue-primary);
+    --primary-color: var(--sefaz-blue-primary);
+    --primary-hover: var(--sefaz-blue-hover);
+    --accent-color: var(--sefaz-orange);
+    --background-main: var(--sefaz-white);
+    --text-primary: var(--sefaz-black);
+    --text-secondary: var(--sefaz-gray-medium);
+  }

@@ -1,0 +1,226 @@
+<div class="api-tester-overlay" (click)="close()">
+  <div class="api-tester-container" (click)="$event.stopPropagation()">
+    <!-- Header -->
+    <div class="api-tester-header">
+      <h1 class="header-title">API Tester</h1>
+      <div class="header-actions">
+        <button class="btn-action" (click)="createNewCollection()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+          </svg>
+          Nova Coleção
+        </button>
+        <button class="btn-action" (click)="showHistory()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12,6 12,12 16,14"></polyline>
+          </svg>
+          Histórico
+        </button>
+        <button class="btn-action" (click)="exportData()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7,10 12,15 17,10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          Exportar
+        </button>
+        <button class="btn-icon" (click)="openSettings()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+        </button>
+        <button class="btn-icon close-btn" (click)="goBack()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12,19 5,12 12,5"></polyline>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="api-tester-content">
+      <!-- Request Section -->
+      <div class="request-section">
+        <div class="request-header">
+          <input 
+            type="text" 
+            class="request-title-input" 
+            [(ngModel)]="requestTitle" 
+            placeholder="Solicitação sem título">
+          
+          <select [(ngModel)]="selectedCollection" class="collection-select">
+            <option value="">Selecionar Coleção</option>
+            <option *ngFor="let collection of collections" [value]="collection.id">
+              {{collection.name}}
+            </option>
+          </select>
+        </div>
+
+        <div class="url-section">
+          <select [(ngModel)]="requestMethod" 
+        class="method-select" 
+        [ngClass]="{
+          'method-get': requestMethod === 'GET',
+          'method-post': requestMethod === 'POST', 
+          'method-put': requestMethod === 'PUT',
+          'method-delete': requestMethod === 'DELETE',
+          'method-patch': requestMethod === 'PATCH'
+        }">
+            <option value="GET" class="method-get">GET</option>
+            <option value="POST" class="method-post">POST</option>
+            <option value="PUT" class="method-put">PUT</option>
+            <option value="DELETE" class="method-delete">DELETE</option>
+            <option value="PATCH" class="method-patch">PATCH</option>
+          </select>
+          
+          <input 
+            type="url" 
+            class="url-input" 
+            [(ngModel)]="requestUrl" 
+            placeholder="Insira o URL ou cole o texto.">
+          
+          <button class="send-btn" (click)="sendRequest()" [disabled]="isLoading">
+            <svg *ngIf="!isLoading" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <polygon points="5,3 19,12 5,21 5,3"></polygon>
+            </svg>
+            <div *ngIf="isLoading" class="loading-spinner"></div>
+            Enviar
+          </button>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs-container">
+          <div class="tabs-nav">
+            <button 
+              class="tab-btn" 
+              [class.active]="activeTab === 'params'"
+              (click)="setActiveTab('params')">
+              Parâmetros
+            </button>
+            <button 
+              class="tab-btn" 
+              [class.active]="activeTab === 'auth'"
+              (click)="setActiveTab('auth')">
+              Autenticações
+            </button>
+            <button 
+              class="tab-btn" 
+              [class.active]="activeTab === 'headers'"
+              (click)="setActiveTab('headers')">
+              Cabeçalhos
+            </button>
+            <button 
+              class="tab-btn" 
+              [class.active]="activeTab === 'body'"
+              (click)="setActiveTab('body')">
+              Corpo
+            </button>
+            <button 
+              class="tab-btn" 
+              [class.active]="activeTab === 'config'"
+              (click)="setActiveTab('config')">
+              Configurações
+            </button>
+          </div>
+
+          <!-- Tab Content -->
+          <div class="tab-content">
+            <!-- Parameters Tab -->
+            <div class="tab-pane" *ngIf="activeTab === 'params'">
+              <div class="params-section">
+                <div class="section-header">
+                  <h4>Parâmetros de consulta</h4>
+                  <button class="btn-add" (click)="addQueryParam()">+ Adicionar</button>
+                </div>
+                <div class="params-list" *ngIf="queryParams.length > 0">
+                  <div class="param-row" *ngFor="let param of queryParams; let i = index">
+                    <input 
+                      type="text" 
+                      placeholder="Chave" 
+                      [(ngModel)]="param.key"
+                      class="param-input">
+                    <input 
+                      type="text" 
+                      placeholder="Valor" 
+                      [(ngModel)]="param.value"
+                      class="param-input">
+                    <button class="btn-remove" (click)="removeQueryParam(i)">×</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="params-section">
+                <div class="section-header">
+                  <h4>Variável de caminho</h4>
+                  <button class="btn-add" (click)="addPathVariable()">+ Adicionar</button>
+                </div>
+                <div class="params-list" *ngIf="pathVariables.length > 0">
+                  <div class="param-row" *ngFor="let variable of pathVariables; let i = index">
+                    <input 
+                      type="text" 
+                      placeholder="Chave" 
+                      [(ngModel)]="variable.key"
+                      class="param-input">
+                    <input 
+                      type="text" 
+                      placeholder="Valor" 
+                      [(ngModel)]="variable.value"
+                      class="param-input">
+                    <button class="btn-remove" (click)="removePathVariable(i)">×</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Other tabs would continue here... -->
+            <div class="tab-pane" *ngIf="activeTab !== 'params'">
+              <div class="tab-placeholder">
+                <p>Conteúdo da aba {{activeTab}} será implementado</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Response Section -->
+      <div class="response-section">
+        <div class="response-header">
+          <h3>Resposta</h3>
+          <div class="response-status" *ngIf="response">
+            <span class="status-code" [ngClass]="getStatusClass(response.status)">
+              {{response.status}} {{response.statusText}}
+            </span>
+            <span class="response-time">{{response.time}}ms</span>
+            <span class="response-size">{{formatSize(response.size)}}</span>
+          </div>
+        </div>
+
+        <div class="response-content">
+          <!-- Empty State -->
+          <div class="response-placeholder" *ngIf="!response && !isLoading">
+            <div class="placeholder-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <polygon points="5,3 19,12 5,21 5,3"></polygon>
+              </svg>
+            </div>
+            <p>Envie uma solicitação para obter uma resposta</p>
+            <small>A resposta aparecerá aqui</small>
+          </div>
+
+          <!-- Loading State -->
+          <div class="loading-state" *ngIf="isLoading">
+            <div class="loading-spinner"></div>
+            <p>Enviando requisição...</p>
+          </div>
+
+          <!-- Response Content -->
+          <div class="response-data" *ngIf="response && !isLoading">
+            <pre class="response-body">{{formatResponseBody()}}</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

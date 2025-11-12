@@ -1,0 +1,6 @@
+{
+    "buildCommand": "npm install --legacy-peer-deps && npm run build",
+    "outputDirectory": "dist/ANGULAR-SEFAZ-BACK1/browser",
+    "framework": "none"
+  }
+  

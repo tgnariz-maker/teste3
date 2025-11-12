@@ -1,0 +1,265 @@
+<div class="dashboard-container">
+  <!-- Toast Notifications -->
+  <app-toast></app-toast>
+  
+  <!-- Header Section -->
+  <div class="dashboard-header">
+    <div class="header-content">
+      <h1 class="dashboard-title">Backends</h1>
+      <p class="dashboard-subtitle">Gerencie seus serviços e microserviços</p>
+    </div>
+    <div class="header-buttons">
+      <button class="btn-api-tester" (click)="openApiTester()">
+        🧪 API Tester
+      </button>
+      <button class="btn-new-backend" (click)="addNewBackend()">
+        + Novo Backend
+      </button>
+    </div>
+  </div>
+  
+  <!-- Search and Filters -->
+  <div class="search-filter-section">
+    <div class="search-container">
+      <div class="search-input-wrapper">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="21 21l-4.35-4.35"></path>
+        </svg>
+        <input
+          type="text"
+          [(ngModel)]="searchTerm"
+          placeholder="Buscar backends por nome, descrição ou tags..."
+          class="search-input">
+      </div>
+    </div>
+    
+    <!-- Botão de Filtros Melhorado -->
+    <div class="filters-wrapper">
+      <button class="btn-filters" (click)="toggleFilters()" [class.active]="showFilters">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46"></polygon>
+        </svg>
+        Filtros
+        <span class="filter-count" *ngIf="selectedFilter !== 'all' || selectedEnvironment !== 'all' || selectedTag !== 'all'">
+          {{ (selectedFilter !== 'all' ? 1 : 0) + (selectedEnvironment !== 'all' ? 1 : 0) + (selectedTag !== 'all' ? 1 : 0) }}
+        </span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Painel de Filtros Expandido -->
+  <div class="filters-panel" *ngIf="showFilters">
+    <div class="filters-content">
+      <!-- Filtros por Status -->
+      <div class="filter-group">
+        <h4>Status</h4>
+        <div class="filter-options">
+          <button 
+            class="filter-btn" 
+            [class.active]="selectedFilter === 'all'"
+            (click)="setFilter('all')">
+            Todos ({{backends.length}})
+          </button>
+          <button 
+            class="filter-btn healthy" 
+            [class.active]="selectedFilter === 'Healthy'"
+            (click)="setFilter('Healthy')">
+            Saudáveis ({{getStatusCount('Healthy')}})
+          </button>
+          <button 
+            class="filter-btn warning" 
+            [class.active]="selectedFilter === 'Warning'"
+            (click)="setFilter('Warning')">
+            Aviso ({{getStatusCount('Warning')}})
+          </button>
+          <button 
+            class="filter-btn error" 
+            [class.active]="selectedFilter === 'Error'"
+            (click)="setFilter('Error')">
+            Erro ({{getStatusCount('Error')}})
+          </button>
+        </div>
+      </div>
+
+      <!-- Filtros por Ambiente -->
+      <div class="filter-group">
+        <h4>Ambiente</h4>
+        <div class="filter-options">
+          <button 
+            class="filter-btn" 
+            [class.active]="selectedEnvironment === 'all'"
+            (click)="setEnvironmentFilter('all')">
+            Todos
+          </button>
+          <button 
+            *ngFor="let env of availableEnvironments"
+            class="filter-btn environment"
+            [class.active]="selectedEnvironment === env"
+            (click)="setEnvironmentFilter(env)">
+            {{env}} ({{getEnvironmentCount(env)}})
+          </button>
+        </div>
+      </div>
+
+      <!-- Filtros por Tags -->
+      <div class="filter-group" *ngIf="availableTags.length > 0">
+        <h4>Tags</h4>
+        <div class="filter-options tags">
+          <button 
+            class="filter-btn" 
+            [class.active]="selectedTag === 'all'"
+            (click)="setTagFilter('all')">
+            Todas
+          </button>
+          <button 
+            *ngFor="let tag of availableTags"
+            class="filter-btn tag"
+            [class.active]="selectedTag === tag"
+            (click)="setTagFilter(tag)">
+            {{tag}} ({{getTagCount(tag)}})
+          </button>
+        </div>
+      </div>
+
+      <!-- Ações dos Filtros -->
+      <div class="filter-actions">
+        <button class="btn-clear-filters" (click)="clearFilters()">
+          Limpar Filtros
+        </button>
+        <span class="results-count">
+          {{filteredBackends.length}} de {{backends.length}} backends
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="stats-grid" *ngIf="stats">
+    <!-- Total Backends -->
+    <div class="stat-card">
+      <div class="stat-content">
+        <div class="stat-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+            <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
+            <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
+          </svg>
+        </div>
+        <div class="stat-info">
+          <span class="stat-number">{{stats.totalBackends}}</span>
+          <span class="stat-label">Total Backends</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Saudáveis -->
+    <div class="stat-card">
+      <div class="stat-content">
+        <div class="stat-icon healthy">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <polyline points="22,12 18,12 15,21 9,3 6,12 2,12"></polyline>
+          </svg>
+        </div>
+        <div class="stat-info">
+          <span class="stat-number">{{stats.healthyServices}}</span>
+          <span class="stat-label">Saudáveis</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- APIs Totais -->
+    <div class="stat-card">
+      <div class="stat-content">
+        <div class="stat-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="2" y1="12" x2="22" y2="12"></line>
+            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+          </svg>
+        </div>
+        <div class="stat-info">
+          <span class="stat-number">{{stats.totalApis}}</span>
+          <span class="stat-label">APIs Totais</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Uptime Médio -->
+    <div class="stat-card">
+      <div class="stat-content">
+        <div class="stat-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          </svg>
+        </div>
+        <div class="stat-info">
+          <span class="stat-number">{{stats.averageUptime}}</span>
+          <span class="stat-label">Uptime Médio</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-container" *ngIf="loading">
+    <div class="loading-spinner"></div>
+    <p>Carregando backends...</p>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="!loading && filteredBackends.length === 0 && backends.length === 0">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+      <circle cx="12" cy="12" r="10"></circle>
+      <line x1="8" y1="12" x2="16" y2="12"></line>
+      <line x1="12" y1="8" x2="12" y2="16"></line>
+    </svg>
+    <h3>Nenhum backend encontrado</h3>
+    <p>Comece criando seu primeiro backend</p>
+    <button class="btn-primary" (click)="addNewBackend()">
+      + Criar Primeiro Backend
+    </button>
+  </div>
+
+  <!-- No Results State -->
+  <div class="empty-state" *ngIf="!loading && filteredBackends.length === 0 && backends.length > 0">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+      <circle cx="11" cy="11" r="8"></circle>
+      <path d="21 21l-4.35-4.35"></path>
+    </svg>
+    <h3>Nenhum resultado encontrado</h3>
+    <p>Tente ajustar os filtros ou termo de busca</p>
+    <button class="btn-secondary" (click)="clearFilters()">
+      Limpar Filtros
+    </button>
+  </div>
+
+  <!-- Backends Grid -->
+  <div class="backends-grid" *ngIf="!loading && filteredBackends.length > 0">
+    <app-backend-card
+      *ngFor="let backend of filteredBackends"
+      [backend]="backend"
+      (onViewDetails)="openBackendDetails(backend)">
+    </app-backend-card>
+  </div>
+
+  <!-- Backend Modal -->
+  <app-backend-modal
+    *ngIf="showModal"
+    [backend]="selectedBackend"
+    [mode]="modalMode"
+    (onClose)="closeModal()"
+    (onSave)="onBackendSaved($event)"
+    (onEdit)="modalMode = 'edit'"
+    (onDelete)="onBackendDeleted($event)">
+  </app-backend-modal>
+
+  <!-- API Tester Modal -->
+  <app-api-tester
+    *ngIf="showApiTester"
+    (onClose)="closeApiTester()">
+  </app-api-tester>
+</div>
